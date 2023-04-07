@@ -1,5 +1,5 @@
 import { useState, useLayoutEffect } from "react";
-import { Text, View, Pressable, ScrollView, Image, Modal } from "react-native";
+import { Text, View, Pressable, ScrollView, Image, Modal,Share } from "react-native";
 import { styles } from "./style";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -30,6 +30,17 @@ export default function Detail() {
   function handleOpenVideo(){
     setShowVideo(true)
   }
+
+  async function shareRecipe(){
+    try {
+      await Share.share({
+        url: "https://expo.dev",
+        message: `Receita: ${route.params?.data.name}`
+      })
+    } catch (error) {
+      alert(error)
+    }
+  }
   return (
     <ScrollView
       style={styles.container}
@@ -53,7 +64,9 @@ export default function Detail() {
             Ingredientes ({route.params?.data.total_ingredients})
           </Text>
         </View>
-        <Pressable>
+        
+        {/* Botão de compartilhar */}
+        <Pressable onPress={shareRecipe}>
           <Feather name="share-2" size={24} color="#121212" />
         </Pressable>
       </View>

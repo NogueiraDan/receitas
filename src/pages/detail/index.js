@@ -7,25 +7,38 @@ import { Entypo, AntDesign, Feather } from "@expo/vector-icons";
 import Ingredients from "../../components/Ingredients";
 import Instruction from "../../components/Instruction";
 import VideoView from "../../components/Video";
+import {isFavorite, saveFavorites, removeFavorites} from "../../utils/storage"
 
 export default function Detail() {
   const route = useRoute();
   const navigation = useNavigation();
   const [showVideo, setShowVideo] = useState(false)
+  const [favorite, setFavorite] = useState(false)
 
-  // Pegando o nome da receita e setando no header
+  
   useLayoutEffect(() => {
+    // Verificando se o item está favoritado ou não
+    async function getStatusFavorite(){
+      const receipeFavorite = await isFavorite(route.params?.data)
+      setFavorite(receipeFavorite)
+    }
+    getStatusFavorite()
+
+    // Pegando o nome da receita e setando no header
     navigation.setOptions({
-      title: route.params?.data
-        ? route.params?.data.name
-        : "Detalhes da receita",
+      title: route.params?.data,
       headerRight: () => (
-        <Pressable onPress={() => alert("Teste")}>
-          <Entypo name="heart" size={28} color="#FF4141" />
+        <Pressable onPress={() => handleFavoriteReceipe(route.params?.data)}>
+          {favorite ? (
+            <Entypo name="heart" size={28} color="#FF4141" />
+          ):(
+            <Entypo name="heart-outlined" size={28} color="#FF4141" />
+          )
+          }
         </Pressable>
       ),
     });
-  }, [route, navigation]);
+  }, [route.params?.data, navigation, favorite]);
   
   function handleOpenVideo(){
     setShowVideo(true)
@@ -40,6 +53,18 @@ export default function Detail() {
     } catch (error) {
       alert(error)
     }
+  }
+
+  async function handleFavoriteReceipe(receipe){
+    if(favorite){
+      await removeFavorites(receipe.id)
+      setFavorite(false)
+    }
+    else{
+      await saveFavorites("@appreceitas",receipe)
+      setFavorite(true)
+    }
+
   }
   return (
     <ScrollView

@@ -10,7 +10,6 @@ const styles = StyleSheet.create({
     borderBottomRightRadius:20,
     borderTopLeftRadius: 20,
     marginBottom: 20,
-    marginTop: 20
   },
   logo:{
     fontSize: 18,
